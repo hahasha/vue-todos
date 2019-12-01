@@ -3,7 +3,7 @@
  * @Author: liusha
  * @Date:   2019-11-28 23:55:30
  * @Last Modified by:   liusha
- * @Last Modified time: 2019-11-29 16:02:01
+ * @Last Modified time: 2019-12-02 00:08:31
  */
 </script>
 <template>
@@ -12,7 +12,7 @@
       <div class="title-wrap">
         <h1 class="title">
           {{todo.title}}
-          <span class="count">{{todo.count}}</span>
+          <span class="count">{{todo.count || 0}}</span>
         </h1>
         <div class="operate-wrap">
           <span class="icon-lock iconfont" v-if="todo.locked">&#xe6e6;</span>
@@ -43,47 +43,41 @@
 
 <script>
 import todoItem from "./item";
+import { getTodo } from "../api/api";
 export default {
   data() {
     return {
-      todo: {
-        title: "Fiona",
-        locked: false,
-        count: 3
-      },
-      items: [
-        {
-          checked: false,
-          text: "操作元素的 class 列表和内联样式是数据绑定的一个常见需求。",
-          deleted: false
-        },
-        {
-          checked: true,
-          text: "操作元素的 class 列表和内联样式是数据绑定的一个常见需求。",
-          deleted: false
-        },
-        {
-          checked: true,
-          text: "操作元素的 class 列表和内联样式是数据绑定的一个常见需求。",
-          deleted: false
-        }
-      ],
+      todo: {},
+      items: [],
       text: "" //新增代办事项绑定的值
     };
   },
+  created() {
+    this.init();
+  },
   methods: {
-    // 回车时新增一条代办事项,同时把输入框置空
-    onAdd() {
-      this.items.push({
-        checked: false,
-        text: this.text,
-        deleted: false
+    init() {
+      const ID = this.$route.params.id;
+      getTodo({ id: ID }).then(res => {
+        let data = res.data.todo;
+        this.items = data.record;
+        this.todo = {
+          id : data.id,
+          title : data.title,
+          count : data.count,
+          locked : data.locked,
+          isDelete : data.isDelete
+        }
       });
-      this.text = "";
     }
   },
   components: {
     todoItem
+  },
+  watch: {
+    "$route.params.id": function(id) {
+      this.init();
+    }
   }
 };
 </script>
@@ -93,7 +87,7 @@ export default {
   width: 100%;
   height: 120px;
   box-sizing: border-box;
-  padding: 0 30px;
+  padding: 0 20px;
   background: linear-gradient(180deg, #d0edf5, #e1e5f0);
 }
 
@@ -163,7 +157,8 @@ export default {
   background: none;
 }
 
-.todo-lists 
-  padding-top 20px
+.todo-lists {
+  padding-top: 20px;
+}
 </style>
 

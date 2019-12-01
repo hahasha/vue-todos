@@ -1,7 +1,7 @@
 var path = require('path')
-function resolve (dir) {
-	console.log(__dirname)
-	return path.join(__dirname, dir)
+function resolve(dir) {
+  console.log(__dirname)
+  return path.join(__dirname, dir)
 }
 
 module.exports = {
@@ -90,59 +90,59 @@ module.exports = {
   // crossorigin: "",
 
   integrity: false,
-  
-  configureWebpack: {
-     resolve: {
-      alias: {
-        'assets': '@/assets',
-        'components': '@/components',
-        'views': '@/views',
-      }
-    }
-  },
 
-  // css相关配置
+  // configureWebpack: {
+  //   resolve: {
+  //     alias: {
+  //       'assets': '@/assets',
+  //       'components': '@/components',
+  //       'views': '@/views',
+  //     }
+  //   }
+  //   ,
 
-  css: {
+    // css相关配置
 
-    // 是否使用css分离插件 ExtractTextPlugin
+    css: {
 
-    extract: true,
+      // 是否使用css分离插件 ExtractTextPlugin
 
-    // 开启 CSS source maps?
+      extract: true,
 
-    sourceMap: false,
+      // 开启 CSS source maps?
 
-    // css预设器配置项
+      sourceMap: false,
 
-    loaderOptions: {
-    	stylus: {
-    		data: `@import "~@/common/stylus/variable.styl";`
-    	}
+      // css预设器配置项
+
+      loaderOptions: {
+        stylus: {
+          data: `@import "~@/common/stylus/variable.styl";`
+        }
+      },
+
+      // 启用 CSS modules for all css / pre-processor files.
+
+      modules: false
+
     },
 
-    // 启用 CSS modules for all css / pre-processor files.
+    devServer: {
 
-    modules: false
+      port: 8080,
 
-  },
+      host: "0.0.0.0",
 
-  devServer: {
+      https: false,
 
-    port: 8080,
+      // 自动启动浏览器
 
-    host: "0.0.0.0",
+      open: false,
 
-    https: false,
-
-    // 自动启动浏览器
-
-    open: false,
-
-    proxy: {
-      "/api": {
+      proxy: {
+        "/api": {
           //代理路径 例如 https://baidu.com
-          target:  "https://u.y.qq.com/cgi-bin/musicu.fcg",
+          target: "https://u.y.qq.com/cgi-bin/musicu.fcg",
           //https 需要配置
           secure: true,
           // 将主机标头的原点更改为目标URL
@@ -152,14 +152,19 @@ module.exports = {
             "^/api": ""
           }
         }
+      }
+
+    },
+
+    chainWebpack: config => {
+      config.resolve.alias
+        .set('components', resolve('src/components'))
+        .set('common', resolve('src/common'))
+        .set('stylus', resolve('src/common/stylus')) // key,value自行定义，比如.set('@@', resolve('src/components'))
+    },
+
+    configureWebpack: config => {
+      config.entry.app = ["babel-polyfill", "./src/main.js"];
     }
-
-  },
-
-  chainWebpack: config => {
-  	config.resolve.alias
-  		.set('components', resolve('src/components'))
-  		.set('common', resolve('src/common'))
-  		.set('stylus', resolve('src/common/stylus')) // key,value自行定义，比如.set('@@', resolve('src/components'))
-  }
+  
 };

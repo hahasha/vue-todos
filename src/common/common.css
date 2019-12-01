@@ -2,10 +2,11 @@
 * @Author: liusha
 * @Date:   2019-11-28 23:57:31
 * @Last Modified by:   liusha
-* @Last Modified time: 2019-11-29 11:44:22
+* @Last Modified time: 2019-12-01 21:21:12
 */
 body {
     width: 100%;
     height: 100%;
     background: linear-gradient(#325581, #908e82);
+    overflow: hidden;
   }
