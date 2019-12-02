@@ -50,9 +50,9 @@ export default {
         mock.onGet('/todo/listId').reply(config => {
             let { id } = config.params;
             let todo = Todos.find(todo => {
-                console.log(todo)
                 return id && todo.id === id;
             });
+            // console.log(todo.record);
             todo.count = todo.record.filter((data) => {
                 return data.checked === false;
             }).length;
@@ -77,10 +77,10 @@ export default {
                     return true;
                 }
             });
-            return new Promise((resolve,reject) => {
+            return new Promise((resolve, reject) => {
                 setTimeout(() => {
                     resolve([200]);
-                },200);
+                }, 200);
             })
         })
     }

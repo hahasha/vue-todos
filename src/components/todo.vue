@@ -3,7 +3,7 @@
  * @Author: liusha
  * @Date:   2019-11-28 23:55:30
  * @Last Modified by:   liusha
- * @Last Modified time: 2019-12-02 00:08:31
+ * @Last Modified time: 2019-12-02 09:08:32
  */
 </script>
 <template>
@@ -43,7 +43,7 @@
 
 <script>
 import todoItem from "./item";
-import { getTodo } from "../api/api";
+import { getTodo, addRecord } from "../api/api";
 export default {
   data() {
     return {
@@ -62,12 +62,23 @@ export default {
         let data = res.data.todo;
         this.items = data.record;
         this.todo = {
-          id : data.id,
-          title : data.title,
-          count : data.count,
-          locked : data.locked,
-          isDelete : data.isDelete
-        }
+          id: data.id,
+          title: data.title,
+          count: data.count,
+          locked: data.locked,
+          isDelete: data.isDelete
+        };
+      });
+    },
+    // 当有输入并且回车时生成一条待办事项
+    onAdd() {
+      const ID = this.$route.params.id;
+      addRecord({
+        id: ID,
+        text: this.text
+      }).then(res => {
+        this.text = "";
+        this.init();
       });
     }
   },

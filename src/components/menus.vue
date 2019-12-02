@@ -3,14 +3,14 @@
  * @Author: liusha
  * @Date:   2019-11-28 22:36:27
  * @Last Modified by:   liusha
- * @Last Modified time: 2019-12-02 00:06:38
+ * @Last Modified time: 2019-12-02 17:21:28
  */
 </script>
 <template>
   <section class="list-todos">
     <a
       class="list-todo"
-      v-for="(item,index) in items"
+      v-for="(item,index) in todoList"
       :key="index"
       @click="changeItem(item.id)"
       :class="{active:item.id==currentId}"
@@ -31,29 +31,54 @@ import { getTodoList, addTodo } from "../api/api"; // 引入封装好的两个�
 export default {
   data() {
     return {
-      items: [],
+      // items: [],
       currentId: ""
     };
   },
+  computed: {
+    todoList() {
+      return this.$store.getters.getTodoList;
+    }
+  },
   created() {
-    //调用请求菜单列表数据的接口
-    getTodoList({}).then(res => {
-      const TODOS = res.data.todos;
-      this.items = TODOS;
-      this.currentId = TODOS[0].id;
+    console.log(this.$store)
+    // //调用请求菜单列表数据的接口
+    // getTodoList({}).then(res => {
+    //   const TODOS = res.data.todos;
+    //   this.items = TODOS;
+    //   this.currentId = TODOS[0].id;
+    // });
+    // //vuex改造
+    this.$store.dispatch("getTodo").then(() => {
+      //调用action.js里的getTodo函数
+      this.$nextTick(() => {
+        this.changeItem(this.todoList[0].id);
+      });
     });
   },
   methods: {
     changeItem(itemId) {
       this.currentId = itemId;
     },
+    // addItem() {
+    //   addTodo({}).then(data => {
+    //     //调用新增菜单的接口，接口调用成功后再请求数据
+    //     getTodoList({}).then(res => {
+    //       const TODOS = res.data.todos;
+    //       this.items = TODOS;
+    //       this.currentId = TODOS[TODOS.length - 1].id; //当前选中的item为新增的那个
+    //     });
+    //   });
+    // }
+    // //vuex改造
     addItem() {
       addTodo({}).then(data => {
-        //调用新增菜单的接口，接口调用成功后再请求数据
-        getTodoList({}).then(res => {
-          const TODOS = res.data.todos;
-          this.items = TODOS;
-          this.currentId = TODOS[TODOS.length - 1].id; //当前选中的item为新增的那个
+        this.$store.dispatch("getTodo").then(() => {
+          this.$nextTick(() => {
+            setTimeout(() => {
+              this.changeItem(this.todoList[this.todoList.length - 1].id);
+            }, 100);
+          });
         });
       });
     }
