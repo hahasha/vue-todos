@@ -13,7 +13,7 @@ const state = {
 // 定义所需的mutations
 const mutations = {
     EDITTODO(state,data){ //定义名为EDITTODO的函数用于改变todoList的值
-        this.todoList = data;
+        state.todoList = data;
     }
 }
 

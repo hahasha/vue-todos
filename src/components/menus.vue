@@ -3,7 +3,7 @@
  * @Author: liusha
  * @Date:   2019-11-28 22:36:27
  * @Last Modified by:   liusha
- * @Last Modified time: 2019-12-02 17:21:28
+ * @Last Modified time: 2019-12-03 09:01:48
  */
 </script>
 <template>
@@ -41,7 +41,6 @@ export default {
     }
   },
   created() {
-    console.log(this.$store)
     // //调用请求菜单列表数据的接口
     // getTodoList({}).then(res => {
     //   const TODOS = res.data.todos;

@@ -12,7 +12,7 @@ export default {
                 return {
                     id: todo.id,
                     title: todo.title,
-                    count: todo.record.filter((data) => {
+                    count: todo.records.filter((data) => {
                         if (data.checked === false) return true;
                         return false;
                     }).length,
@@ -38,7 +38,7 @@ export default {
                 title: 'newList',
                 isDelete: false,
                 locked: false,
-                record: []
+                records: []
             });
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
@@ -52,8 +52,7 @@ export default {
             let todo = Todos.find(todo => {
                 return id && todo.id === id;
             });
-            // console.log(todo.record);
-            todo.count = todo.record.filter((data) => {
+            todo.count = todo.records.filter((data) => {
                 return data.checked === false;
             }).length;
             return new Promise((resolve, reject) => {
@@ -69,7 +68,7 @@ export default {
             let { id, text } = JSON.parse(config.data);
             Todos.some((t, index) => {
                 if (t.id === id) {
-                    t.record.push({
+                    t.records.push({
                         text: text,
                         isDelete: false,
                         checked: false
@@ -83,5 +82,41 @@ export default {
                 }, 200);
             })
         })
+        // 修改标题
+        mock.onPost('/todo/editTodo').reply(config => {
+            let { todo } = JSON.parse(config.data);
+            Todos.some((t, index) => {
+                if (t.id === todo.id) {
+                    t.title = todo.title;
+                    t.locked = todo.locked;
+                    t.isDelete = todo.isDelete;
+                    return true;
+                }
+            });
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve([200]);
+                }, 200);
+            });
+        });
+        // 修改待办项内容
+        mock.onPost('/todo/editRecord').reply(config => {
+            let {
+                id,
+                record,
+                index
+            } = JSON.parse(config.data);
+            Todos.some((t) => {
+                if (t.id === id) {
+                    t.records[index] = record;
+                    return true;
+                }
+            });
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve([200]);
+                }, 200);
+            });
+        });
     }
 }

@@ -1,18 +1,53 @@
 <template>
-  <div class="todo-item" :class="{checked:item.checked}">
-    <div class="check-wrap">
-      <input class="check" type="checkbox" v-model="item.checked" />
-      <span class="icon-check iconfont" v-if="item.checked">&#xe60b;</span>
-      <span class="icon-check unchecked" v-else></span>
+  <transition name="slide-fade">
+    <div class="todo-item" :class="{checked:item.checked}">
+      <div class="check-wrap">
+        <input class="check" type="checkbox" v-model="item.checked" @change="onChange" />
+        <span class="icon-check iconfont" v-if="item.checked">&#xe60b;</span>
+        <span class="icon-check unchecked" v-else></span>
+      </div>
+      <input
+        class="text"
+        v-model="item.text"
+        type="text"
+        placeholder="write something......"
+        :disabled="item.checked || item.locked"
+        @keyup.enter="onChange"
+      />
+      <span
+        class="icon-del iconfont"
+        v-if="item.checked && !item.locked"
+        @click="item.isDelete;onChange()"
+      >&#xe6d0;</span>
     </div>
-    <p class="text">{{item.text}}</p>
-    <span class="icon-del iconfont" v-if="item.checked">&#xe6d0;</span>
-  </div>
+  </transition>
 </template>
 
 <script>
+import { editRecord } from "../api/api";
 export default {
-  props: ["item"]
+  props: {
+    item: {
+      type: Object,
+      default: () => {
+        return {
+          checked: false,
+          text: "hello world!"
+        };
+      }
+    }
+  },
+  methods: {
+    onChange() {
+      editRecord({
+        id: this.id,
+        record: this.item,
+        index: this.index
+      }).then(data => {
+        this.$store.dispatch("getTodo");
+      });
+    }
+  }
 };
 </script>
 
@@ -64,5 +99,29 @@ export default {
 
 .todo-item.checked .text {
   text-decoration: line-through;
+}
+
+.slide-fade-enter-active {
+  transition: all 0.3s ease;
+}
+
+.slide-fade-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+
+.slide-fade-enter, .slide-fade-leave-active {
+  transform: translateX(10px);
+  opacity: 0;
+}
+
+input[type=text] {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 400;
+  border: none;
+  border-radius: 0;
+  box-sizing: border-box;
+  color: #333;
+  outline: none;
 }
 </style>

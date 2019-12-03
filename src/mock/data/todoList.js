@@ -7,7 +7,7 @@ for (let i = 1; i <= COUNT.length; i++) {
         title : Mock.Random.first(),
         isDelete : false,
         locked : Mock.Random.boolean(),
-        record : COUNT.map(()=>{
+        records : COUNT.map(()=>{
             return {
                 text : Mock.Random.cparagraph(2),
                 isDelete : false,

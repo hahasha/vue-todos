@@ -3,21 +3,37 @@
  * @Author: liusha
  * @Date:   2019-11-28 23:55:30
  * @Last Modified by:   liusha
- * @Last Modified time: 2019-12-02 09:08:32
+ * @Last Modified time: 2019-12-03 15:28:16
  */
 </script>
 <template>
   <div class="content">
     <div class="nav-bar">
-      <div class="title-wrap">
-        <h1 class="title">
+      <!-- 点击修改时 -->
+      <div class="title-wrap" v-show="isUpdate">
+        <div class="todo-edit-wrap">
+          <input
+            class="todo-edit-input"
+            type="text"
+            v-model="todo.title"
+            @keyup.enter="updateTitle"
+            :disabled="todo.locked"
+          />
+          <span class="icon-cancle iconfont" @click="isUpdate = false">&#xe615;</span>
+        </div>
+      </div>
+      <!-- 无修改时 -->
+      <div class="title-wrap" v-show="!isUpdate">
+        <h1 class="title" @click="isUpdate = true">
           {{todo.title}}
           <span class="count">{{todo.count || 0}}</span>
         </h1>
         <div class="operate-wrap">
-          <span class="icon-lock iconfont" v-if="todo.locked">&#xe6e6;</span>
-          <span v-else class="icon-unlock iconfont">&#xe6e7;</span>
-          <span class="icon-del iconfont">&#xe6d0;</span>
+          <a @click="onLock">
+            <span class="icon-lock iconfont" v-if="todo.locked">&#xe6e6;</span>
+            <span v-else class="icon-unlock iconfont">&#xe6e7;</span>
+          </a>
+          <span class="icon-del iconfont" @click="onDelete">&#xe6d0;</span>
         </div>
       </div>
       <div class="input-wrap" :class="{disable:todo.locked}">
@@ -43,13 +59,14 @@
 
 <script>
 import todoItem from "./item";
-import { getTodo, addRecord } from "../api/api";
+import { getTodo, addRecord, editTodo } from "../api/api";
 export default {
   data() {
     return {
       todo: {},
       items: [],
-      text: "" //新增代办事项绑定的值
+      text: "", //新增代办事项绑定的值
+      isUpdate: false
     };
   },
   created() {
@@ -57,10 +74,10 @@ export default {
   },
   methods: {
     init() {
-      const ID = this.$route.params.id;
+      let ID = this.$route.params.id;
       getTodo({ id: ID }).then(res => {
         let data = res.data.todo;
-        this.items = data.record;
+        this.items = data.records;
         this.todo = {
           id: data.id,
           title: data.title,
@@ -70,9 +87,16 @@ export default {
         };
       });
     },
-    // 当有输入并且回车时生成一条待办事项
+    updateTodo() {
+      let _this = this;
+      editTodo({
+        todo: this.todo
+      }).then(data => {
+        _this.$store.dispatch("getTodo");
+      });
+    },
     onAdd() {
-      const ID = this.$route.params.id;
+      let ID = this.$route.params.id;
       addRecord({
         id: ID,
         text: this.text
@@ -80,6 +104,18 @@ export default {
         this.text = "";
         this.init();
       });
+    },
+    updateTitle() {
+      this.updateTodo();
+      this.isUpdate = false;
+    },
+    onDelete() {
+      this.todo.isDelete = true;
+      this.updateTodo();
+    },
+    onLock() {
+      this.todo.locked = !this.todo.locked;
+      this.updateTodo();
     }
   },
   components: {
@@ -88,6 +124,19 @@ export default {
   watch: {
     "$route.params.id": function(id) {
       this.init();
+    },
+    "$store.state.todoList": function() {
+      getTodo({ id: this.$store.state.todoList[0].id }).then(res => {
+        let data = res.data.todo;
+        this.items = data.records;
+        this.todo = {
+          id: data.id,
+          title: data.title,
+          count: data.count,
+          locked: data.locked,
+          isDelete: data.isDelete
+        };
+      });
     }
   }
 };
@@ -130,6 +179,7 @@ export default {
 
 .icon-lock, .icon-unlock, .icon-del {
   font-size: 34px;
+  cursor: pointer;
 }
 
 .icon-lock, .icon-unlock {
@@ -170,6 +220,22 @@ export default {
 
 .todo-lists {
   padding-top: 20px;
+}
+
+// 修改时
+.todo-edit-wrap {
+  position: relative;
+}
+
+.todo-edit-input {
+  padding: 5px 0 5px 5px;
+}
+
+.icon-cancle {
+  position: absolute;
+  top: 6px;
+  left: 200px;
+  font-size: 20px;
 }
 </style>
 
