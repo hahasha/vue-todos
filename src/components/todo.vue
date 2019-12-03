@@ -3,7 +3,7 @@
  * @Author: liusha
  * @Date:   2019-11-28 23:55:30
  * @Last Modified by:   liusha
- * @Last Modified time: 2019-12-03 15:28:16
+ * @Last Modified time: 2019-12-04 00:07:23
  */
 </script>
 <template>
@@ -51,7 +51,7 @@
     </div>
     <div class="todo-lists">
       <div v-for="(item,index) in items" :key="index">
-        <todoItem :item="item"></todoItem>
+        <todoItem :item="item" :index="index"></todoItem>
       </div>
     </div>
   </div>
@@ -69,23 +69,33 @@ export default {
       isUpdate: false
     };
   },
-  created() {
+  computed : {
+    todoItem(){
+      return this.$store.state.todoItem;
+    }
+  },
+  create() {
     this.init();
   },
   methods: {
     init() {
       let ID = this.$route.params.id;
-      getTodo({ id: ID }).then(res => {
-        let data = res.data.todo;
-        this.items = data.records;
-        this.todo = {
-          id: data.id,
-          title: data.title,
-          count: data.count,
-          locked: data.locked,
-          isDelete: data.isDelete
-        };
-      });
+      var othis = this
+      this.$store.dispatch("getItem", { id: ID }).then(() => {
+        othis.todo = othis.todoItem;
+        othis.items = othis.todoItem.records;
+      })
+      // getTodo({ id: ID }).then(res => {
+      //   let data = res.data.todo;
+      //   this.items = data.records;
+      //   this.todo = {
+      //     id: data.id,
+      //     title: data.title,
+      //     count: data.count,
+      //     locked: data.locked,
+      //     isDelete: data.isDelete
+      //   };
+      // });
     },
     updateTodo() {
       let _this = this;
@@ -125,7 +135,7 @@ export default {
     "$route.params.id": function(id) {
       this.init();
     },
-    "$store.state.todoList": function() {
+    "$store.state.todoList.length": function() {
       getTodo({ id: this.$store.state.todoList[0].id }).then(res => {
         let data = res.data.todo;
         this.items = data.records;
@@ -136,7 +146,11 @@ export default {
           locked: data.locked,
           isDelete: data.isDelete
         };
+        this.$store.state.currentID = this.$store.state.todoList[0].id;
       });
+    },
+    "$store.state.todoItem": function () {
+      this.items = this.$store.state.todoItem.records;
     }
   }
 };

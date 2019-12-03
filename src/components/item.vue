@@ -1,8 +1,7 @@
 <template>
   <transition name="slide-fade">
     <div class="todo-item" :class="{checked:item.checked}">
-      <div class="check-wrap">
-        <input class="check" type="checkbox" v-model="item.checked" @change="onChange" />
+      <div class="check-wrap" @click="onCheck">
         <span class="icon-check iconfont" v-if="item.checked">&#xe60b;</span>
         <span class="icon-check unchecked" v-else></span>
       </div>
@@ -17,14 +16,14 @@
       <span
         class="icon-del iconfont"
         v-if="item.checked && !item.locked"
-        @click="item.isDelete;onChange()"
+        @click="item.isDelete;onDelete()"
       >&#xe6d0;</span>
     </div>
   </transition>
 </template>
 
 <script>
-import { editRecord } from "../api/api";
+import { editRecord , getTodo} from "../api/api";
 export default {
   props: {
     item: {
@@ -32,21 +31,36 @@ export default {
       default: () => {
         return {
           checked: false,
+          isDelete: false,
           text: "hello world!"
         };
       }
-    }
+    },
+    index: Number
   },
   methods: {
+    update(){
+      getTodo(this.$store.state.currentID)
+    },
+    onCheck() {
+      this.item.checked = !this.item.checked;
+      this.onChange();
+    },
+    onDelete() {
+      this.item.isDelete = true;
+      this.onChange();
+    },
     onChange() {
       editRecord({
-        id: this.id,
+        id: this.$store.state.currentID,
         record: this.item,
         index: this.index
       }).then(data => {
+        var othis = this;
+        this.$store.dispatch("getItem",{ 'id': this.$store.state.currentID})
         this.$store.dispatch("getTodo");
       });
-    }
+    },
   }
 };
 </script>

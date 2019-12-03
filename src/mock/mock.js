@@ -32,7 +32,7 @@ export default {
             })
         })
         // 新增一条todo
-        mock.onPost('/todo/addTodo').reply(consfig => {
+        mock.onPost('/todo/addTodo').reply(config => {
             Todos.push({
                 id: Mock.Random.guid(),
                 title: 'newList',
@@ -51,6 +51,10 @@ export default {
             let { id } = config.params;
             let todo = Todos.find(todo => {
                 return id && todo.id === id;
+            });
+            todo.records = todo.records.filter(item => {
+                if (item.isDelete === true) return false;
+                return true;
             });
             todo.count = todo.records.filter((data) => {
                 return data.checked === false;
@@ -108,6 +112,10 @@ export default {
             } = JSON.parse(config.data);
             Todos.some((t) => {
                 if (t.id === id) {
+                    // console.log({
+                    //     "new": record,
+                    //     "old": t.records[index]
+                    // })
                     t.records[index] = record;
                     return true;
                 }

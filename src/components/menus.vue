@@ -3,7 +3,7 @@
  * @Author: liusha
  * @Date:   2019-11-28 22:36:27
  * @Last Modified by:   liusha
- * @Last Modified time: 2019-12-03 09:01:48
+ * @Last Modified time: 2019-12-03 21:27:38
  */
 </script>
 <template>
@@ -30,28 +30,25 @@
 import { getTodoList, addTodo } from "../api/api"; // 引入封装好的两个接口
 export default {
   data() {
-    return {
-      // items: [],
-      currentId: ""
-    };
+    return {};
   },
   computed: {
     todoList() {
       return this.$store.getters.getTodoList;
+    },
+    currentId: {
+      get: function () {
+        return this.$store.state.currentID;
+      },
+      set: function (val) {
+        this.$store.state.currentID = val;
+      }
     }
   },
   created() {
-    // //调用请求菜单列表数据的接口
-    // getTodoList({}).then(res => {
-    //   const TODOS = res.data.todos;
-    //   this.items = TODOS;
-    //   this.currentId = TODOS[0].id;
-    // });
-    // //vuex改造
     this.$store.dispatch("getTodo").then(() => {
-      //调用action.js里的getTodo函数
       this.$nextTick(() => {
-        this.changeItem(this.todoList[0].id);
+        this.changeItem(this.currentId);
       });
     });
   },
@@ -59,17 +56,6 @@ export default {
     changeItem(itemId) {
       this.currentId = itemId;
     },
-    // addItem() {
-    //   addTodo({}).then(data => {
-    //     //调用新增菜单的接口，接口调用成功后再请求数据
-    //     getTodoList({}).then(res => {
-    //       const TODOS = res.data.todos;
-    //       this.items = TODOS;
-    //       this.currentId = TODOS[TODOS.length - 1].id; //当前选中的item为新增的那个
-    //     });
-    //   });
-    // }
-    // //vuex改造
     addItem() {
       addTodo({}).then(data => {
         this.$store.dispatch("getTodo").then(() => {

@@ -3,17 +3,25 @@ import Vuex from 'vuex'
 import * as actions from './actions';
 import * as getters from './getters';
 
-Vue.use(Vuex); 
+Vue.use(Vuex);
 
 // 创建初始应用全局状态变量
 const state = {
-    todoList : [] //代办事项列表数据
-} 
+    todoList: [], //代办事项列表数据
+    todoItem: [],
+    currentID: ''  //当前ID
+}
 
 // 定义所需的mutations
 const mutations = {
-    EDITTODO(state,data){ //定义名为EDITTODO的函数用于改变todoList的值
+    EDITTODO(state, data) { //定义名为EDITTODO的函数用于改变todoList的值
         state.todoList = data;
+    },
+    EDITItem(state, data) { 
+        state.todoItem = data;
+    },
+    CHANGEID(state, id) {
+        state.currentID = id;
     }
 }
 
