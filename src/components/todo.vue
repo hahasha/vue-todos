@@ -3,7 +3,7 @@
  * @Author: liusha
  * @Date:   2019-11-28 23:55:30
  * @Last Modified by:   liusha
- * @Last Modified time: 2019-12-04 00:07:23
+ * @Last Modified time: 2019-12-04 09:45:30
  */
 </script>
 <template>
@@ -63,15 +63,28 @@ import { getTodo, addRecord, editTodo } from "../api/api";
 export default {
   data() {
     return {
-      todo: {},
-      items: [],
+      // todo: {},
+      // items: [],
       text: "", //新增代办事项绑定的值
       isUpdate: false
     };
   },
-  computed : {
-    todoItem(){
-      return this.$store.state.todoItem;
+  computed: {
+    todo: {
+      get: function() {
+        return this.$store.state.todoItem;
+      },
+      set: function(val) {
+        this.$store.state.todoItem = val;
+      }
+    },
+    items: {
+      get: function() {
+        return this.$store.state.todoItem.records;
+      },
+      set: function(val) {
+        this.$store.state.todoItem.records = val;
+      }
     }
   },
   create() {
@@ -79,12 +92,14 @@ export default {
   },
   methods: {
     init() {
-      let ID = this.$route.params.id;
-      var othis = this
-      this.$store.dispatch("getItem", { id: ID }).then(() => {
-        othis.todo = othis.todoItem;
-        othis.items = othis.todoItem.records;
-      })
+      var _this = this;
+      this.$store
+        .dispatch("getItem", { id: this.$store.state.currentID })
+        .then(() => {
+          _this.todo = _this.todo;
+          _this.items = _this.items;
+        });
+
       // getTodo({ id: ID }).then(res => {
       //   let data = res.data.todo;
       //   this.items = data.records;
@@ -136,21 +151,7 @@ export default {
       this.init();
     },
     "$store.state.todoList.length": function() {
-      getTodo({ id: this.$store.state.todoList[0].id }).then(res => {
-        let data = res.data.todo;
-        this.items = data.records;
-        this.todo = {
-          id: data.id,
-          title: data.title,
-          count: data.count,
-          locked: data.locked,
-          isDelete: data.isDelete
-        };
         this.$store.state.currentID = this.$store.state.todoList[0].id;
-      });
-    },
-    "$store.state.todoItem": function () {
-      this.items = this.$store.state.todoItem.records;
     }
   }
 };

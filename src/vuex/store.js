@@ -17,11 +17,8 @@ const mutations = {
     EDITTODO(state, data) { //定义名为EDITTODO的函数用于改变todoList的值
         state.todoList = data;
     },
-    EDITItem(state, data) { 
+    EDITITEM(state, data) { 
         state.todoItem = data;
-    },
-    CHANGEID(state, id) {
-        state.currentID = id;
     }
 }
 

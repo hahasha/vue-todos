@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import { editRecord , getTodo} from "../api/api";
+import { editRecord, getTodo } from "../api/api";
 export default {
   props: {
     item: {
@@ -39,8 +39,8 @@ export default {
     index: Number
   },
   methods: {
-    update(){
-      getTodo(this.$store.state.currentID)
+    update() {
+      getTodo(this.$store.state.currentID);
     },
     onCheck() {
       this.item.checked = !this.item.checked;
@@ -57,10 +57,10 @@ export default {
         index: this.index
       }).then(data => {
         var othis = this;
-        this.$store.dispatch("getItem",{ 'id': this.$store.state.currentID})
+        this.$store.dispatch("getItem", { id: this.$store.state.currentID });
         this.$store.dispatch("getTodo");
       });
-    },
+    }
   }
 };
 </script>
@@ -105,6 +105,7 @@ export default {
 .icon-del {
   font-size: 30px;
   margin-right: 30px;
+  cursor: pointer;
 }
 
 .todo-item.checked {
